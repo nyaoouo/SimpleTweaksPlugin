@@ -30,6 +30,7 @@ namespace SimpleTweaksPlugin.Tweaks.UiAdjustment {
             public bool NoFocus;
             public Vector2 FocusPosition = new Vector2(0);
             public bool EnableDistance = false;
+            public bool EnableEffectiveDistance = false;
             public bool FocusUseCustomColor = false;
             public Vector4 FocusCustomColor = new Vector4(1);
             public byte FocusFontSize = 14;
@@ -87,6 +88,7 @@ namespace SimpleTweaksPlugin.Tweaks.UiAdjustment {
                 }
             }
             hasChanged |= ImGui.Checkbox("显示与目标和的距离", ref Config.EnableDistance);
+            hasChanged |= ImGui.Checkbox("显示与目标的有效距离", ref Config.EnableEffectiveDistance);
 
         };
         
@@ -222,10 +224,15 @@ namespace SimpleTweaksPlugin.Tweaks.UiAdjustment {
             
             if (target is Chara chara)
             {
-                Vector3 me = PluginInterface.ClientState.LocalPlayer.Position;
-                Vector3 tar = chara.Position;
-                var y = "  " + Vector3.Distance(me, tar).ToString("00.0");
-                if (!Config.EnableDistance) y = "";
+                var y = "";
+                if (Config.EnableDistance){
+                    Vector3 me = PluginInterface.ClientState.LocalPlayer.Position;
+                    Vector3 tar = chara.Position;
+                    y += "  " + Vector3.Distance(me, tar).ToString("00.0");
+                }
+                if (Config.EnableEffectiveDistance){
+                    y += "  " + target.YalmDistanceX.ToString();
+                }
                 UiHelper.SetText(textNode, $"{FormatNumber(chara.CurrentHp)}/{FormatNumber(chara.MaxHp)}"+y);
             } else {
                 UiHelper.SetText(textNode, "");
